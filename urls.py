@@ -1,5 +1,5 @@
 """
-URL configuration for calcproject project.
+URL configuration for dicttable project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('calculator.urls')),  # Include calculator app URLs
+    path("admin/", admin.site.urls),
+    path("", include("tableapp.urls")),
 ]
