@@ -1,40 +1,70 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import BillDetails from './components/BillDetails';
+import ItemList from './components/ItemList';
+import TotalAmount from './components/TotalAmount';
+import { jsPDF } from 'jspdf';
 import './App.css';
 
 function App() {
+    const [items, setItems] = useState([]);
 
-  const employees = [
-    { name: "Rohan", id: 101, salary: 25000 },
-    { name: "Amit", id: 102, salary: 30000 },
-    { name: "Sneha", id: 103, salary: 28000 }
-  ];
+    const handleAddItem = (item) => {
+        setItems([...items, item]);
+    };
 
-  return (
-    <div className="App">
-      <h1>This is my first page</h1>
+    const handleDeleteItem = (index) => {
+        const updatedItems = [...items];
+        updatedItems.splice(index, 1);
+        setItems(updatedItems);
+    };
 
-      <table border="1" cellPadding="10" style={{ margin: "auto" }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>ID</th>
-            <th>Salary</th>
-          </tr>
-        </thead>
+    const calculateTotalAmount = () => {
+        return items.reduce(
+            (total, item) =>
+                total + item.quantity * item.price,
+            0
+        );
+    };
 
-        <tbody>
-          {employees.map((emp, index) => (
-            <tr key={index}>
-              <td>{emp.name}</td>
-              <td>{emp.id}</td>
-              <td>{emp.salary}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    const handleDownloadPDF = () => {
+        const pdf = new jsPDF();
+        pdf.text('Invoice', 20, 20);
 
-    </div>
-  );
+        items.forEach((item, index) => {
+            pdf.text(
+                `Item: ${item.item}, Qty: ${item.quantity}, Price: ${item.price}`,
+                20,
+                30 + index * 10
+            );
+        });
+
+        pdf.text(
+            `Total Amount: $${calculateTotalAmount().toFixed(2)}`,
+            20,
+            180
+        );
+
+        pdf.save('invoice.pdf');
+    };
+
+    return (
+        <div className="App">
+            <h1>Bill / Invoice Generator</h1>
+
+            <BillDetails onAddItem={handleAddItem} />
+
+            <ItemList
+                items={items}
+                onDeleteItem={handleDeleteItem}
+            />
+
+            <TotalAmount total={calculateTotalAmount()} />
+
+            <button onClick={handleDownloadPDF}>
+                Download PDF
+            </button>
+        </div>
+    );
 }
 
 export default App;
